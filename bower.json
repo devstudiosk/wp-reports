@@ -1,0 +1,30 @@
+{
+  "name": "ds-wp-reports",
+  "description": "Powerful reporting framework for WordPress. Written by developers for developers.",
+  "main": "gulpfile.js",
+  "authors": [
+    "Dev Studio spol. s r.o."
+  ],
+  "license": "BSD-3-Clause",
+  "keywords": [
+    "wordpress",
+    "reports",
+    "reporting",
+    "analytics"
+  ],
+  "homepage": "http://www.devstudio.sk/",
+  "private": true,
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "chart.js": "^2.6.0",
+    "bootstrap-daterangepicker": "^2.1.25",
+    "bootstrap": "^3.3.7",
+    "moment": "^2.18.1"
+  }
+}
