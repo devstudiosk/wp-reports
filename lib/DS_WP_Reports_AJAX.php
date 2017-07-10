@@ -8,23 +8,25 @@
  */
 class DS_WP_Reports_AJAX {
 
-	public static function __init() {
+	public static function init() {
 
-		add_action('wp_ajax_' . DS_WP_Reports_Core::AJAX_ACTION_REPORT_SETUP, array(__CLASS__, 'handleReportSetupCall'));
-		add_action('wp_ajax_' . DS_WP_Reports_Core::AJAX_ACTION_REPORT_DATA, array(__CLASS__, 'handleReportDataCall'));
+		add_action('wp_ajax_' . DS_WP_Reports_Core::AJAX_ACTION_REPORT_SETUP, array(__CLASS__, 'handleReportSetupCall'), 10, 0);
+		add_action('wp_ajax_' . DS_WP_Reports_Core::AJAX_ACTION_REPORT_DATA, array(__CLASS__, 'handleReportDataCall'), 10, 0);
 
 	}
 
 	public static function handleReportSetupCall() {
 
 		$reportId = array_key_exists('report_id', $_REQUEST) ? trim($_REQUEST['report_id']) : null;
+		$report = DS_WP_Reports_Core::getReportById($reportId);
+		$result = $report;
 
-		$result = true; //VS_SpeedTest_Model::updateLocationInfo($measureId, $address, $latitude, $longitude, $addressJSON);
 		if (is_wp_error($result)) {
 			wp_send_json_error($result->get_error_message());
 		}
 
-		wp_send_json_sucess();
+		unset($result['data_callback']);
+		wp_send_json_success($result);
 
 	}
 
@@ -35,13 +37,19 @@ class DS_WP_Reports_AJAX {
 			wp_send_json_error('Missing report ID');
 		}
 
-		$result = DS_WP_Reports_Core::executeReportDataHandler($reportId);
+		$reportData = DS_WP_Reports_Core::executeReportDataHandler($reportId);
 
-		if (is_wp_error($result)) {
-			wp_send_json_error($result->get_error_message($result->get_error_code));
+		//	@todo check the data format
+
+		if (is_wp_error($reportData)) {
+			wp_send_json_error($reportData->get_error_message($reportData->get_error_code));
 		}
 
-		wp_send_json_sucess($result);
+		$visualizationType = array_key_exists('visualization', $_REQUEST) ? trim($_REQUEST['visualization']) : 'timeline';
+		$result = array_merge($reportData, array(
+			'visualization' => $visualizationType
+		));
+		wp_send_json_success($result);
 
 	}
 

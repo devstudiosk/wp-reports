@@ -32,11 +32,12 @@ all built-in reports. Use should use this hook to add custom reports.
   - custom filter (see **Filter attributes** below)
 - `data_callback (callable)` - The callback to be run when report data is needed.
 - `minimum_capability (string)` - Minimal capability a user must have to see the report. Defaults to `wp_reports_view`
-- `suitable_visualisations` (string|array) - List of suitable visualisations. Accepted values are 'tabular' and 'timeline'.
+- `suitable_visualizations` (string|array) - List of suitable visualizations. Accepted values are 'tabular' and 'timeline'.
 - `export_supported (bool)` - Optional, enabled by default. Enable export of tabular data.
 
 ##### Filter attributes
 - `filter_id` (string)
+- `label (string)`
 - `values (array)` - Associative array of possible values.
 - `default_value (int|string)` - Optional. Default value for the filter.
 
@@ -48,6 +49,11 @@ all built-in reports. Use should use this hook to add custom reports.
   - `page (int)`
   - `per_page (int)`
   - `visualisation (string)`
+
+## Data format
+- `labels`
+- `highlights`
+- `values`
 
 ## Add-on ideas
 - addon to allow admins to select specific users for each report via a neat UI

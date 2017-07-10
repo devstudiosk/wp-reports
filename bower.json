@@ -25,6 +25,9 @@
     "chart.js": "^2.6.0",
     "bootstrap-daterangepicker": "^2.1.25",
     "bootstrap": "^3.3.7",
-    "moment": "^2.18.1"
+    "moment": "^2.18.1",
+    "select2": "^4.0.3",
+    "select2-multi-checkboxes": "https://github.com/wasikuss/select2-multi-checkboxes.git",
+    "dynatable": "^0.3.1"
   }
 }
