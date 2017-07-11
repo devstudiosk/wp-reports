@@ -197,9 +197,14 @@ jQuery.noConflict();
 					html += '<span></span> <b class="caret"></b>';
 					html += '</div><!-- /#daterange -->';
 
-					html += '<a href="#" class="pull-right filter-toggle" onclick="return DS_WP_Reports.toggleFilters();">';
-					html += '<i class="glyphicon glyphicon-filter"></i>&nbsp;Filter';
-					html += '</a>';
+					var showFiltersTrigger = reportSetup.filters && reportSetup.filters.length;
+					if (showFiltersTrigger) {
+
+						html += '<a href="#" class="pull-right filter-toggle" onclick="return DS_WP_Reports.toggleFilters();">';
+						html += '<i class="glyphicon glyphicon-filter"></i>&nbsp;Filter';
+						html += '</a>';
+
+					}
 
 					html += '</div>';
 					html += '</div>';
