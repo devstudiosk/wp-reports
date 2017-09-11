@@ -4,7 +4,9 @@ jQuery.noConflict();
 		$(document).ready(function() {
 
 			DS_WP_Reports = DS_WP_Reports || {};
+			DS_WP_Reports.chart = null;
 			DS_WP_Reports.dateFormat = 'YYYY-MM-DD';
+
 			DS_WP_Reports.stretchCanvas = function(id) {
 
 				var canvas = $('#' + id);
@@ -13,19 +15,23 @@ jQuery.noConflict();
 					'width': (w - 20) + 'px'
 				});
 			};
-			DS_WP_Reports.chart = null;
+
 			DS_WP_Reports.switchReport = function(element) {
 
 				var reportId = $(element).data('report-id');
+
 				//	@todo indicate loading
 				$.post(DS_WP_Reports.ajax_url, {
 					'action': DS_WP_Reports.action_get_report_setup,
 					'report_id': reportId
 				}, DS_WP_Reports.onReportSetupLoaded)
 						.fail(DS_WP_Reports.onReportSetupFailed);
+
 				$(element).closest('ul').find('li').removeClass('active');
 				$(element).closest('li').addClass('active');
+
 				return false;
+
 			};
 
 			DS_WP_Reports.onReportDataLoaded = function(data, textStatus, jqXHR) {
@@ -54,6 +60,11 @@ jQuery.noConflict();
 
 						html += '</div><!-- /.highlights -->';
 						$(html).insertBefore(reportContent.closest('.row'));
+
+					}
+
+					if (data.data.values.length === 0) {
+						reportContent.append('<p>No data available for current selection.</p>');
 
 					}
 
@@ -197,9 +208,14 @@ jQuery.noConflict();
 					html += '<span></span> <b class="caret"></b>';
 					html += '</div><!-- /#daterange -->';
 
-					html += '<a href="#" class="pull-right filter-toggle" onclick="return DS_WP_Reports.toggleFilters();">';
-					html += '<i class="glyphicon glyphicon-filter"></i>&nbsp;Filter';
-					html += '</a>';
+					var showFiltersTrigger = reportSetup.filters && reportSetup.filters.length;
+					if (showFiltersTrigger) {
+
+						html += '<a href="#" class="pull-right filter-toggle" onclick="return DS_WP_Reports.toggleFilters();">';
+						html += '<i class="glyphicon glyphicon-filter"></i>&nbsp;Filter';
+						html += '</a>';
+
+					}
 
 					html += '</div>';
 					html += '</div>';
@@ -274,8 +290,21 @@ jQuery.noConflict();
 
 			DS_WP_Reports.initializeDaterangePicker = function() {
 
-				var startDate = moment().subtract(30, 'days');
-				var endDate = moment();
+				//	default dates
+				var startDate = moment().subtract(31, 'days');
+				var endDate = moment().subtract(1, 'days');
+
+				//	use dates from cookies if available
+				var cookieStartDate = Cookies.get('dswpr-start-date');
+				if (typeof cookieStartDate !== 'undefined') {
+					startDate = moment("" + cookieStartDate);
+				}
+
+				var cookieEndDate = Cookies.get('dswpr-end-date');
+				if (typeof cookieEndDate !== 'undefined') {
+					endDate = moment("" + cookieEndDate);
+				}
+
 				$('#daterange').daterangepicker({
 					"showDropdowns": true,
 					"showWeekNumbers": true,
@@ -315,9 +344,15 @@ jQuery.noConflict();
 
 			DS_WP_Reports.onDateRangeChanged = function(start, end) {
 
-				$('#daterange span').html(start.format(DS_WP_Reports.dateFormat) + ' - ' + end.format(DS_WP_Reports.dateFormat));
-				$('.report-area').find('form.report-options input[name=date_from]').val(moment(start).format(DS_WP_Reports.dateFormat));
-				$('.report-area').find('form.report-options input[name=date_to]').val(moment(end).format(DS_WP_Reports.dateFormat));
+				var startDateFormatted = start.format(DS_WP_Reports.dateFormat);
+				var endDateFormatted = end.format(DS_WP_Reports.dateFormat);
+
+				Cookies.set('dswpr-start-date', startDateFormatted, {expires: 365, path: '/', domain: window.location.hostname});
+				Cookies.set('dswpr-end-date', endDateFormatted, {expires: 365, path: '/', domain: window.location.hostname});
+
+				$('#daterange span').html(startDateFormatted + ' - ' + endDateFormatted);
+				$('.report-area').find('form.report-options input[name=date_from]').val(startDateFormatted);
+				$('.report-area').find('form.report-options input[name=date_to]').val(endDateFormatted);
 
 			};
 

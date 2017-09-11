@@ -1,6 +1,7 @@
 {
   "name": "ds-wp-reports",
   "description": "Powerful reporting framework for WordPress. Written by developers for developers.",
+  "version": "1.0.2",
   "main": "gulpfile.js",
   "authors": [
     "Dev Studio spol. s r.o."
@@ -28,6 +29,7 @@
     "moment": "^2.18.1",
     "select2": "^4.0.3",
     "select2-multi-checkboxes": "https://github.com/wasikuss/select2-multi-checkboxes.git",
-    "dynatable": "^0.3.1"
+    "dynatable": "^0.3.1",
+    "js-cookie": "^2.1.4"
   }
 }

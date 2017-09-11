@@ -11,12 +11,12 @@ var copy = require('gulp-copy');
 var sass = require('gulp-sass');
 
 var jsSources = [
-	'js/*.js',
-	'!js/*.min.js'
+	'js/src/*.js',
+	'!js/src/*.min.js'
 ];
 
 var sassSources = [
-	'css/*.scss'
+	'css/src/*.scss'
 ];
 
 var cssSources = [
@@ -78,7 +78,8 @@ gulp.task('process-vendor-js', [], function(cb) {
 			'./bower_components/bootstrap-daterangepicker/daterangepicker.js',
 			'./bower_components/chart.js/dist/Chart.js',
 			'./bower_components/select2/dist/js/select2.full.js',
-			'./bower_components/dynatable/jquery.dynatable.js'
+			'./bower_components/dynatable/jquery.dynatable.js',
+			'./bower_components/js-cookie/src/js.cookie.js'
 		]),
 		concat('vendor.js'),
 		uglify(),
@@ -114,27 +115,39 @@ gulp.task('build', ['process-css', 'process-js']);
 
 gulp.task('package', ['build'], function(cb) {
 
+	var fs = require('fs');
+	var time = dateFormat(new Date(), "yyyy-mm-dd_HH-MM");
+	var pkg = JSON.parse(fs.readFileSync('./package.json'));
+	var filename = pkg.name + '-' + pkg.version + '-' + time + '.zip';
+
 	pump([
 		gulp.src([
 			'**/*',
+			'!**/js/src',
+			'!**/js/src/**',
+			'!**/css/src',
+			'!**/css/src/**',
 			'!**/node_modules/**',
+			'!**/node_modules',
 			'!**/bower_components/**',
+			'!**/bower_components',
 			'!**/components/**',
+			'!**/components',
 			'!**/scss/**',
+			'!**/scss',
 			'!**/bower.json',
 			'!**/gulpfile.js',
 			'!**/package.json',
 			'!**/composer.json',
 			'!**/composer.lock',
 			'!**/codesniffer.ruleset.xml',
-			'!**/packaged/**'
+			'!**/dist/**',
+			'!**/dist'
 		]),
-		zip(dateFormat(new Date(), "yyyy-mm-dd_HH-MM") + '.zip'),
-		gulp.dest('packaged')
+		zip(filename),
+		gulp.dest('dist')
 	], cb);
 
 });
-
-
 
 gulp.task('default', ['build']);

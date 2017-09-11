@@ -31,7 +31,7 @@ all built-in reports. Use should use this hook to add custom reports.
   - `date_range` - Allows filtering by start and end date. Enabled by default. Defaults to last 30 days. Uses keys `date_from` and `date_to` when loading data.
   - custom filter (see **Filter attributes** below)
 - `data_callback (callable)` - The callback to be run when report data is needed.
-- `minimum_capability (string)` - Minimal capability a user must have to see the report. Defaults to `wp_reports_view`
+- `minimum_capability (string)` - Minimal capability a user must have to see the report. Defaults to `wp_reports_view`.
 - `suitable_visualizations` (string|array) - List of suitable visualizations. Accepted values are 'tabular' and 'timeline'.
 - `export_supported (bool)` - Optional, enabled by default. Enable export of tabular data.
 
@@ -48,7 +48,7 @@ all built-in reports. Use should use this hook to add custom reports.
   - `date_to (int)`
   - `page (int)`
   - `per_page (int)`
-  - `visualisation (string)`
+  - `visualization (string)`
 
 ## Data format
 - `labels`
@@ -64,5 +64,8 @@ all built-in reports. Use should use this hook to add custom reports.
 - Filter for report filters - `wpr-filters-<report_id>`, useful to remove default filters such as date range.
 - Allow autocomplete select for report filters. Only static list is supported at the moment.
 - Timeline supports only grouping by day, it would be hancy to add grouping by other time periods (week, month, quarter, year).
-- Add more visualisation types.
+- Add more visualization types.
 - Allow the minimum capability to be a callback that returns true or false. This would allow third parties have more control over access to plugin. Someone might want to implement a UI for selecting users who are allowed to see a certain report.
+- Multiple data series when only 1 data series defined and only 1 filter available
+- Allow 3-rd parties to display selected reports on a separate admin page.
+- Add shortcode support to be able to show the chart anywhere.
