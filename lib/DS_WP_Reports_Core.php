@@ -2,7 +2,7 @@
 
 /**
  * Bootstrap class for the whole plugin.
- * 
+ *
  * @author Martin Krcho <martin.krcho@devstudio.sk>
  * @since 1.0.0
  */
