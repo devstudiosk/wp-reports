@@ -4,7 +4,7 @@
  * Plugin Name: Reports for WordPress
  * Plugin URI: http://www.devstudio.sk/
  * Description: Powerful reporting framework for WordPress. Written by developers for developers.
- * Version: 1.0.2
+ * Version: 1.0.3
  * Author: Dev Studio spol. s r.o.
  * Author URI: http://www.devstudio.sk/
  */
@@ -24,6 +24,7 @@ function ds_wp_reports_autoloader($class) {
 
 	$folders = array('lib', 'modules');
 	foreach ($folders as $folder) {
+		
 		$pathToFile = DS_WP_REPORTS_PLUGIN_PATH . $folder . DIRECTORY_SEPARATOR . $class . '.php';
 		if (file_exists($pathToFile)) {
 			include $pathToFile;

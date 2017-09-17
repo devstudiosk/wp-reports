@@ -17,11 +17,25 @@ class DS_WP_Reports_Core {
 
 		DS_WP_Reports_AJAX::init();
 
-		//	@todo load all classes from "modules" folder
+		//	load all classes from "modules" folder
+		if (!function_exists('list_files')) {
+			require_once(ABSPATH . 'wp-admin/includes/file.php');
+		}
+
+		$files = list_files(DS_WP_REPORTS_PLUGIN_PATH . 'modules', 1);
+
+		foreach ($files as $file) {
+
+			$filenameStartPosition = strrpos($file, '/') + 1;
+			$filename = substr($file, $filenameStartPosition);
+			$moduleClassName = substr($filename, 0, strrpos($filename, '.'));
+
+			$module = new $moduleClassName();
+			$module::initModule();
+		}
 
 		add_action('admin_enqueue_scripts', array(__CLASS__, 'admin_enqueue_scripts'));
 		add_action('admin_menu', array(__CLASS__, 'add_admin_menu'));
-		add_filter('wpr-available-reports', array(__CLASS__, 'addReports'), 10, 1);
 
 	}
 
@@ -68,6 +82,12 @@ class DS_WP_Reports_Core {
 
 	}
 
+	public static function getGroups() {
+
+		return apply_filters('wpr-available-groups', array());
+
+	}
+
 	public static function render() {
 
 		echo '<div class="container-fluid wp-reports-pane">';
@@ -75,7 +95,7 @@ class DS_WP_Reports_Core {
 
 		echo '<div class="col-xs-12 col-md-3">';
 		echo '<div class="nav-box">';
-		echo '<h2>' . __('Reports for WordPress', 'ds-wp-reports') . '</h2>';
+		//echo '<h2>' . __('Reports for WordPress', 'ds-wp-reports') . '</h2>';
 
 		$reports = self::getReports();
 		if (empty($reports)) {
@@ -106,11 +126,22 @@ class DS_WP_Reports_Core {
 
 	private static function renderReportList($reports) {
 
-		echo '<ul class="nav nav-pills nav-stacked">';
-		foreach ($reports as $key => $report) {
-			echo '<li><a href="#" data-report-id="' . $key . '" onclick="return DS_WP_Reports.switchReport(this);">' . $report['name'] . '</a></li>';
+		$groups = self::getGroups();
+		if (!empty($groups)) {
+
+			echo '<ul class="nav nav-pills nav-stacked">';
+			foreach ($groups as $groupId => $group) {
+
+				echo '<li class="group">' . $group['name'] . '</li>';
+				foreach ($reports as $reportId => $report) {
+					if ($report['group_id'] === $groupId) {
+						echo '<li><a href="#" data-report-id="' . $reportId . '" onclick="return DS_WP_Reports.switchReport(this);">' . $report['name'] . '</a></li>';
+					}
+				}
+			}
+
+			echo '</ul>';
 		}
-		echo '</ul>';
 
 	}
 
@@ -124,196 +155,20 @@ class DS_WP_Reports_Core {
 	public static function executeReportDataHandler($reportId = '') {
 
 		$report = self::getReportById($reportId);
-		$result = call_user_func($report['data_callback'], $reportId, $_REQUEST);
-		return $result;
-
-	}
-
-	/**
-	 * Add default Reports from WordPress
-	 *
-	 * @author Jakub Bajzath <jakub.bajzath@devstudio.sk>
-	 * @since 1.0.1
-	 *
-	 * @param array $reports
-	 *
-	 * @return array Array of reports settings and parameters
-	 */
-	public static function addReports($reports = array()) {
-
-		$reports['wp-post-count'] = [
-			'report_id' => 'wp-post-count',
-			'name' => __('WordPress - posts per day'),
-			'filters' => array(),
-			'data_callback' => array(__CLASS__, 'handleDataRequest'),
-			'suitable_visualizations' => array('timeline', 'tabular')
-		];
-
-		$reports['wp-comments-count'] = [
-			'report_id' => 'wp-comments-count',
-			'name' => __('WordPress - comments per day'),
-			'filters' => array(),
-			'data_callback' => array(__CLASS__, 'handleDataRequest'),
-			'suitable_visualizations' => array('timeline', 'tabular')
-		];
-
-		return $reports;
-
-	}
-
-	/**
-	 * Check if date is valid MySQL Data
-	 *
-	 * @since 1.0.1
-	 *
-	 * @param bool $value
-	 *
-	 * @return bool True if value is valid MySQL Date, false if not
-	 */
-	public static function isValidMySQLDate($value = false) {
-
-		$matches = preg_match('/^\d{4}\-\d{2}\-\d{2}$/', $value);
-		return ($matches === 1);
-
-	}
-
-	/**
-	 * Handle data request from settings array
-	 *
-	 * @author Jakub Bajzath <jakub.bajzath@devstudio.sk>
-	 * @since 1.0.1
-	 *
-	 * @param int $reportId
-	 * @param array $settings
-	 *
-	 * @return array|WP_Error Generated data for report, or WP Error if error occurred
-	 */
-	public static function handleDataRequest($reportId = 0, $settings = array()) {
+		$settings = $_REQUEST;
 
 		$currentTime = current_time('timestamp');
-		$toDate = array_key_exists('date_to', $settings) ? trim($settings['date_to']) : date('Y-m-d', $currentTime);
-		$fromDate = array_key_exists('date_from', $settings) ? trim($settings['date_from']) : date('Y-m-d', $currentTime - 30 * 86400);
+		$toDate = array_key_exists('date_to', $settings) ? trim($settings['date_to']) : date('Y-m-d', $currentTime - 86400);
+		$fromDate = array_key_exists('date_from', $settings) ? trim($settings['date_from']) : date('Y-m-d', $currentTime - 31 * 86400);
 
-		if (!self::isValidMySQLDate($toDate) || !self::isValidMySQLDate($fromDate)) {
-			return new WP_Error(__('Invalid date range'));
+		if (!DS_WP_Reports_Utils::isValidMySQLDate($toDate) || !DS_WP_Reports_Utils::isValidMySQLDate($fromDate)) {
+			return new WP_Error(__('Invalid date range', 'ds-wp-reports'));
 		}
 
-		if ($settings['report_id'] === 'wp-post-count') {
-			return self::generateDailyPostCount($fromDate, $toDate);
-		} elseif ($settings['report_id'] === 'wp-comments-count') {
-			return self::generateDailyCommentsCount($fromDate, $toDate);
-		}
+		$settings['date_from'] = $fromDate;
+		$settings['date_to'] = $toDate;
 
-	}
-
-	/**
-	 * Generated daily stats for WordPress posts
-	 *
-	 * @author Jakub Bajzath <jakub.bajzath@devstudio.sk>
-	 * @since 1.0.1
-	 *
-	 * @param string $fromDate
-	 * @param string $toDate
-	 *
-	 * @return array Array with generated data for WP Reports
-	 */
-	public static function generateDailyPostCount($fromDate = '', $toDate = '') {
-
-		global $wpdb;
-
-		$postsQueryPrepared = "SELECT DATE_FORMAT(post_date,%s) AS post_date2, COUNT(*) AS count"
-				. " FROM {$wpdb->posts} "
-				. " WHERE post_date BETWEEN %s AND %s "
-				. " AND post_status = 'publish' "
-				. " AND post_type = 'post' "
-				. " GROUP BY post_date2;";
-
-		$postsQuery = $wpdb->prepare($postsQueryPrepared, '%Y-%m-%d', $fromDate, $toDate, '%Y-%m-%d');
-		$posts = $wpdb->get_results($postsQuery);
-
-		$values = array();
-
-		$totalPosts = 0;
-		foreach ($posts as $post) {
-			$values[$post->post_date2] = [
-				'total' => intval($post->count)
-			];
-
-			$totalPosts += intval($post->count);
-		}
-
-		$result = [
-			'labels' => [
-				'total' => 'Total'
-			],
-			'highlights' => [
-				[
-					'title' => 'Total',
-					'value' => intval($totalPosts),
-					'description' => 'posts'
-				]
-			],
-			'values' => $values
-		];
-
-		$result['query'] = $postsQuery;
-
-		return $result;
-
-	}
-
-	/**
-	 * Generated daily stats for WordPress comments
-	 *
-	 * @author Jakub Bajzath <jakub.bajzath@devstudio.sk>
-	 * @since 1.0.1
-	 *
-	 * @param string $fromDate
-	 * @param string $toDate
-	 *
-	 * @return array Array with generated data for WP Reports
-	 */
-	public static function generateDailyCommentsCount($fromDate = '', $toDate = '') {
-
-		global $wpdb;
-
-		$postsQueryPrepared = "SELECT DATE_FORMAT(comment_date,%s) AS comment_date2, COUNT(*) AS count"
-				. " FROM {$wpdb->comments} "
-				. " WHERE comment_date BETWEEN %s AND %s "
-				. " AND comment_type != 'pingback' "
-				. " AND comment_approved = 1 "
-				. " GROUP BY comment_date2;";
-
-		$postsQuery = $wpdb->prepare($postsQueryPrepared, '%Y-%m-%d', $fromDate, $toDate, '%Y-%m-%d');
-		$posts = $wpdb->get_results($postsQuery);
-
-		$values = [];
-
-		$totalPosts = 0;
-		foreach ($posts as $post) {
-			$values[$post->comment_date2] = [
-				'total' => intval($post->count)
-			];
-
-			$totalPosts += intval($post->count);
-		}
-
-		$result = [
-			'labels' => [
-				'total' => 'Total'
-			],
-			'highlights' => [
-				[
-					'title' => 'Total',
-					'value' => intval($totalPosts),
-					'description' => 'comments'
-				]
-			],
-			'values' => $values
-		];
-
-		$result['query'] = $postsQuery;
-
+		$result = call_user_func($report['data_callback'], $reportId, $settings);
 		return $result;
 
 	}
