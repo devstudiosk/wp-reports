@@ -27,6 +27,7 @@ all built-in reports. Use should use this hook to add custom reports.
 
 ##### Report attributes
 - `name (string)` - Name of the report. Used in navigation and report list.
+- `group_id (string)` - ID of the group the report belongs to.
 - `filters (array)` - List of filters.
   - `date_range` - Allows filtering by start and end date. Enabled by default. Defaults to last 30 days. Uses keys `date_from` and `date_to` when loading data.
   - custom filter (see **Filter attributes** below)
@@ -50,10 +51,18 @@ all built-in reports. Use should use this hook to add custom reports.
   - `per_page (int)`
   - `visualization (string)`
 
+### wpr-available-groups
+- `id (string)` - Group ID. Used to assign report to a group.
+- `name (string)` - Name of the group.
+
 ## Data format
 - `labels`
 - `highlights`
 - `values`
+
+## Modules
+
+There are couple of reports bundled within the core of this plugin. Each modules is a separate file in "modules" folder and it must contain a class that implements <code>DS_WP_Reports_ModuleInterface</code>.
 
 ## Add-on ideas
 - addon to allow admins to select specific users for each report via a neat UI
