@@ -78,13 +78,27 @@ class DS_WP_Reports_Core {
 
 	public static function getReports() {
 
-		return apply_filters('wpr-available-reports', array());
+		$reports = apply_filters('wpr-available-reports', array());
+
+		foreach ($reports as &$report) {
+			if (!array_key_exists('group_id', $report)) {
+				$report['group_id'] = 'other';
+			}
+		}
+		return $reports;
 
 	}
 
 	public static function getGroups() {
 
-		return apply_filters('wpr-available-groups', array());
+		$groups = apply_filters('wpr-available-groups', array());
+
+		$groups['other'] = array(
+			'id' => 'other',
+			'name' => __('Other', 'ds-wp-reports')
+		);
+
+		return $groups;
 
 	}
 
@@ -95,7 +109,6 @@ class DS_WP_Reports_Core {
 
 		echo '<div class="col-xs-12 col-md-3">';
 		echo '<div class="nav-box">';
-		//echo '<h2>' . __('Reports for WordPress', 'ds-wp-reports') . '</h2>';
 
 		$reports = self::getReports();
 		if (empty($reports)) {
@@ -129,8 +142,27 @@ class DS_WP_Reports_Core {
 		$groups = self::getGroups();
 		if (!empty($groups)) {
 
+			//	work out number of reports in each group to avoid empty groups
+			$filtersByGroupCount = array();
+			foreach ($groups as $groupId => $group) {
+
+				if (!array_key_exists($groupId, $filtersByGroupCount)) {
+					$filtersByGroupCount[$groupId] = 0;
+				}
+
+				foreach ($reports as $reportId => $report) {
+					if ($report['group_id'] === $groupId) {
+						$filtersByGroupCount[$groupId] ++;
+					}
+				}
+			}
+
 			echo '<ul class="nav nav-pills nav-stacked">';
 			foreach ($groups as $groupId => $group) {
+
+				if ($filtersByGroupCount[$groupId] === 0) {
+					continue;
+				}
 
 				echo '<li class="group">' . $group['name'] . '</li>';
 				foreach ($reports as $reportId => $report) {

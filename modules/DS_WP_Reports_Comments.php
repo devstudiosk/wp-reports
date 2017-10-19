@@ -15,7 +15,7 @@ class DS_WP_Reports_Comments {
 
 			$groups['wordpress'] = array(
 				'id' => 'wordpress',
-				'name' => 'WordPress'
+				'name' => __('WordPress', 'ds-wp-reports')
 			);
 		}
 
