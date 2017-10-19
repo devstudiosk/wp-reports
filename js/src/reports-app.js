@@ -6,6 +6,18 @@ jQuery.noConflict();
 			DS_WP_Reports = DS_WP_Reports || {};
 			DS_WP_Reports.chart = null;
 			DS_WP_Reports.dateFormat = 'YYYY-MM-DD';
+			DS_WP_Reports.lastReportItemClicked;
+
+			DS_WP_Reports.buildLoader = function() {
+
+				var result = '<div class="loading-indicator">';
+				for (var index = 1; index < 6; index++) {
+					result += '<div class="rect' + index + '"></div>';
+				}
+				result += '</div>';
+				return result;
+
+			};
 
 			DS_WP_Reports.stretchCanvas = function(id) {
 
@@ -18,17 +30,21 @@ jQuery.noConflict();
 
 			DS_WP_Reports.switchReport = function(element) {
 
+				if ($(element).hasClass('disabled')) {
+					return false;
+				}
+
 				var reportId = $(element).data('report-id');
 
-				//	@todo indicate loading
+				DS_WP_Reports.lastReportItemClicked = $(element);
+				$(element).closest('li').append(DS_WP_Reports.buildLoader());
+				DS_WP_Reports.lastReportItemClicked.closest('ul').find('a').addClass('disabled');
+
 				$.post(DS_WP_Reports.ajax_url, {
 					'action': DS_WP_Reports.action_get_report_setup,
 					'report_id': reportId
 				}, DS_WP_Reports.onReportSetupLoaded)
 						.fail(DS_WP_Reports.onReportSetupFailed);
-
-				$(element).closest('ul').find('li').removeClass('active');
-				$(element).closest('li').addClass('active');
 
 				return false;
 
@@ -65,7 +81,6 @@ jQuery.noConflict();
 
 					if (data.data.values.length === 0) {
 						reportContent.append('<p>No data available for current selection.</p>');
-
 					}
 
 					if (data.data.visualization === 'timeline') {
@@ -183,6 +198,7 @@ jQuery.noConflict();
 
 				return colors[index % colors.length];
 			};
+
 			DS_WP_Reports.toggleFilters = function() {
 				$('.filters-area').toggle();
 				return false;
@@ -257,7 +273,7 @@ jQuery.noConflict();
 					html += '<input type="hidden" name="date_to" value="" />';
 					html += '</form>';
 					html += '<div class="row">';
-					html += '<div class="col-xs12 report-content"></div>'
+					html += '<div class="col-xs12 report-content"></div>';
 					html += '</div>';
 					html += '</div><!-- /.row -->';
 					reportArea.append(html);
@@ -273,9 +289,13 @@ jQuery.noConflict();
 					$('.report-area').find('form.report-options').trigger('submit');
 				}
 
-				//	@todo hide loading indicator
+				DS_WP_Reports.lastReportItemClicked.closest('ul').find('li').removeClass('active');
+				DS_WP_Reports.lastReportItemClicked.closest('li').addClass('active');
+				DS_WP_Reports.lastReportItemClicked.closest('li').find('.loading-indicator').remove();
+				DS_WP_Reports.lastReportItemClicked.closest('ul').find('a.disabled').removeClass('disabled');
 
 			};
+
 			DS_WP_Reports.submitReportOptionsForm = function() {
 
 				//	@todo indicate loading
