@@ -1,3 +1,11 @@
+String.prototype.replaceAll = function(map) {
+	var target = this;
+	for (var key in map) {
+		target = target.replace(new RegExp(key, 'g'), map[key]);
+	}
+	return target;
+};
+
 jQuery.noConflict();
 (function($) {
 	$(function() {
@@ -6,6 +14,7 @@ jQuery.noConflict();
 			DS_WP_Reports = DS_WP_Reports || {};
 			DS_WP_Reports.chart = null;
 			DS_WP_Reports.dateFormat = 'YYYY-MM-DD';
+			DS_WP_Reports.dateRanges;
 			DS_WP_Reports.lastReportItemClicked;
 
 			DS_WP_Reports.buildLoader = function() {
@@ -308,67 +317,168 @@ jQuery.noConflict();
 
 			};
 
+
+			DS_WP_Reports.getDateRanges = function(formatForDatepicker) {
+
+				if (typeof DS_WP_Reports.dateRanges === 'undefined') {
+
+					DS_WP_Reports.dateRanges = {
+						last_7_days: {
+							label: DS_WP_Reports.last_x_days.replaceAll({
+								'%%count%%': 7
+							}),
+							start: moment().subtract(7, 'days'),
+							end: moment()
+						},
+						last_30_days: {
+							label: DS_WP_Reports.last_x_days.replaceAll({
+								'%%count%%': 30
+							}),
+							start: moment().subtract(30, 'days'),
+							end: moment()
+						},
+						this_month: {
+							label: DS_WP_Reports.this_month,
+							start: moment().startOf('month'),
+							end: moment()
+						},
+						last_month: {
+							label: DS_WP_Reports.last_month,
+							start: moment().startOf('month').subtract(1, 'days').startOf('month'),
+							end: moment().startOf('month').subtract(1, 'days')
+						}
+					};
+
+				}
+
+				var dateRanges = DS_WP_Reports.dateRanges;
+
+				if (!formatForDatepicker) {
+					return dateRanges;
+				}
+
+				var result = {};
+				for (var index in dateRanges) {
+
+					var dr = dateRanges[index];
+					result[dr.label] = [
+						dr.start, dr.end
+					];
+
+				}
+
+				return result;
+			};
+
+			DS_WP_Reports.getPredefinedDateRangeIdByLabel = function(label) {
+
+				var dateRanges = DS_WP_Reports.getDateRanges();
+				for (var index in dateRanges) {
+
+					var dr = dateRanges[index];
+					if (label === dr.label) {
+						return index;
+					}
+
+				}
+
+				return null;
+
+			};
+
+			DS_WP_Reports.getPredefinedDateRangeById = function(id) {
+
+				var dateRanges = DS_WP_Reports.getDateRanges();
+				for (var index in dateRanges) {
+
+					if (id === index) {
+						return dateRanges[index];
+					}
+
+				}
+
+				return null;
+
+			};
+
 			DS_WP_Reports.initializeDaterangePicker = function() {
 
 				//	default dates
 				var startDate = moment().subtract(31, 'days');
 				var endDate = moment().subtract(1, 'days');
 
-				//	use dates from cookies if available
-				var cookieStartDate = Cookies.get('dswpr-start-date');
+				//	use start/end dates from cookies if available
+				var cookieStartDate = Cookies.get('ds-wpr-start-date');
 				if (typeof cookieStartDate !== 'undefined') {
 					startDate = moment("" + cookieStartDate);
 				}
 
-				var cookieEndDate = Cookies.get('dswpr-end-date');
+				var cookieEndDate = Cookies.get('ds-wpr-end-date');
 				if (typeof cookieEndDate !== 'undefined') {
 					endDate = moment("" + cookieEndDate);
 				}
 
+				//	use predefined date range from cookie if available
+				var cookieDateRange = Cookies.get('ds-wpr-range');
+				if (typeof cookieDateRange !== 'undefined') {
+
+					var dateRange = DS_WP_Reports.getPredefinedDateRangeById(cookieDateRange);
+					if (dateRange !== null) {
+
+						startDate = dateRange.start;
+						endDate = dateRange.end;
+
+					}
+
+				}
+
 				$('#daterange').daterangepicker({
-					"showDropdowns": true,
-					"showWeekNumbers": true,
+					showDropdowns: true,
+					showWeekNumbers: true,
 					locale: {
 						format: DS_WP_Reports.dateFormat
 					},
 					startDate: startDate,
 					endDate: endDate,
-					"ranges": {
-						"Last 7 Days": [
-							moment().subtract(7, 'days'),
-							moment()
-						],
-						"Last 30 Days": [
-							moment().subtract(30, 'days'),
-							moment()
-						],
-						"This Month": [
-							moment().startOf('month'),
-							moment()
-						],
-						"Last Month": [
-							moment().startOf('month').subtract(1, 'days').startOf('month'),
-							moment().startOf('month').subtract(1, 'days')
-						]
-					},
-					"alwaysShowCalendars": true,
-					"opens": "left"
+					ranges: DS_WP_Reports.getDateRanges(true),
+					alwaysShowCalendars: true,
+					opens: 'left'
 				}, function(start, end, label) {
 
-					DS_WP_Reports.onDateRangeChanged(start, end);
+					DS_WP_Reports.onDateRangeChanged(start, end, label);
 					$('.report-area').find('form.report-options').trigger('submit');
 
 				});
-				DS_WP_Reports.onDateRangeChanged(startDate, endDate);
+
+				DS_WP_Reports.onDateRangeChanged(startDate, endDate, '__init__');
+
 			};
 
-			DS_WP_Reports.onDateRangeChanged = function(start, end) {
+			DS_WP_Reports.onDateRangeChanged = function(start, end, label) {
 
 				var startDateFormatted = start.format(DS_WP_Reports.dateFormat);
 				var endDateFormatted = end.format(DS_WP_Reports.dateFormat);
 
-				Cookies.set('dswpr-start-date', startDateFormatted, {expires: 365, path: '/', domain: window.location.hostname});
-				Cookies.set('dswpr-end-date', endDateFormatted, {expires: 365, path: '/', domain: window.location.hostname});
+				console.log(label);
+				if (label !== '__init__') {
+
+					var predefinedDateRange = DS_WP_Reports.getPredefinedDateRangeIdByLabel(label);
+					console.log(predefinedDateRange);
+					if (predefinedDateRange !== null) {
+
+						Cookies.set('ds-wpr-range', predefinedDateRange, {expires: 365, path: '/', domain: window.location.hostname});
+						Cookies.remove('ds-wpr-start-date');
+						Cookies.remove('ds-wpr-end-date');
+
+					} else {
+
+						Cookies.set('ds-wpr-start-date', startDateFormatted, {expires: 365, path: '/', domain: window.location.hostname});
+						Cookies.set('ds-wpr-end-date', endDateFormatted, {expires: 365, path: '/', domain: window.location.hostname});
+						Cookies.remove('ds-wpr-range');
+
+					}
+
+				}
 
 				$('#daterange span').html(startDateFormatted + ' - ' + endDateFormatted);
 				$('.report-area').find('form.report-options input[name=date_from]').val(startDateFormatted);
@@ -387,7 +497,7 @@ jQuery.noConflict();
 			};
 
 			//	do nothing and wait for user to select a report (or perhaps show
-			//	default report)
+			//	default report?)
 
 		});
 	});

@@ -68,7 +68,10 @@ class DS_WP_Reports_Core {
 		wp_localize_script('ds-wp-reports', 'DS_WP_Reports', array(
 			'ajax_url' => admin_url('admin-ajax.php'),
 			'action_get_report_setup' => self::AJAX_ACTION_REPORT_SETUP,
-			'action_get_report_data' => self::AJAX_ACTION_REPORT_DATA
+			'action_get_report_data' => self::AJAX_ACTION_REPORT_DATA,
+			'last_x_days' => sprintf(__('Last %s days', 'ds-wp-reports'), '%%count%%'),
+			'this_month' => __('This month', 'ds-wp-reports'),
+			'last_month' => __('Last month', 'ds-wp-reports')
 		));
 
 		wp_enqueue_style('wp-reports-vendor', plugins_url('/css/vendor.min.css', DS_WP_REPORTS_PLUGIN_INDEX), array(), '1.0.1');
