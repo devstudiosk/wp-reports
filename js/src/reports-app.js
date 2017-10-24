@@ -44,7 +44,7 @@ jQuery.noConflict();
 					'action': DS_WP_Reports.action_get_report_setup,
 					'report_id': reportId
 				}, DS_WP_Reports.onReportSetupLoaded)
-						.fail(DS_WP_Reports.onReportSetupFailed);
+					.fail(DS_WP_Reports.onReportSetupFailed);
 
 				return false;
 
@@ -53,6 +53,8 @@ jQuery.noConflict();
 			DS_WP_Reports.onReportDataLoaded = function(data, textStatus, jqXHR) {
 
 				if (data.success === true) {
+
+					DS_WP_Reports.initExportButton();
 
 					var reportContent = $('.report-content');
 					$('.highlights').remove();
@@ -223,6 +225,8 @@ jQuery.noConflict();
 					html += '<i class="glyphicon glyphicon-calendar fa fa-calendar"></i>&nbsp;';
 					html += '<span></span> <b class="caret"></b>';
 					html += '</div><!-- /#daterange -->';
+					html += '<input type="button" name="export-csv" value="CSV EXPORT" class="button-primary pull-right">';
+					html += '</form>';
 
 					var showFiltersTrigger = reportSetup.filters && reportSetup.filters.length;
 					if (showFiltersTrigger) {
@@ -303,7 +307,31 @@ jQuery.noConflict();
 				var form = $(this);
 				var data = 'action=' + DS_WP_Reports.action_get_report_data + '&' + form.serialize();
 				$.post(DS_WP_Reports.ajax_url, data, DS_WP_Reports.onReportDataLoaded)
-						.fail(DS_WP_Reports.onReportDataLoadFailed);
+					.fail(DS_WP_Reports.onReportDataLoadFailed);
+				return false;
+
+			};
+
+			DS_WP_Reports.initExportButton = function() {
+
+				var exportButton = $('input[name="export-csv"]');
+
+				exportButton.click(function() {
+					DS_WP_Reports.exportButtonOnClickAction(exportButton);
+				});
+
+			};
+
+			DS_WP_Reports.exportButtonOnClickAction = function() {
+
+				var reportArea = $('.report-area');
+				var reportForm = reportArea.find('form.report-options');
+
+				var formData = reportForm.serialize() + '&export=csv';
+
+				var data = 'action=' + DS_WP_Reports.action_get_report_data + '&' + formData;
+				$.post(DS_WP_Reports.ajax_url, data, DS_WP_Reports.onReportDataLoaded)
+					.fail(DS_WP_Reports.onReportDataLoadFailed);
 				return false;
 
 			};
@@ -367,8 +395,16 @@ jQuery.noConflict();
 				var startDateFormatted = start.format(DS_WP_Reports.dateFormat);
 				var endDateFormatted = end.format(DS_WP_Reports.dateFormat);
 
-				Cookies.set('dswpr-start-date', startDateFormatted, {expires: 365, path: '/', domain: window.location.hostname});
-				Cookies.set('dswpr-end-date', endDateFormatted, {expires: 365, path: '/', domain: window.location.hostname});
+				Cookies.set('dswpr-start-date', startDateFormatted, {
+					expires: 365,
+					path: '/',
+					domain: window.location.hostname
+				});
+				Cookies.set('dswpr-end-date', endDateFormatted, {
+					expires: 365,
+					path: '/',
+					domain: window.location.hostname
+				});
 
 				$('#daterange span').html(startDateFormatted + ' - ' + endDateFormatted);
 				$('.report-area').find('form.report-options input[name=date_from]').val(startDateFormatted);
@@ -388,6 +424,7 @@ jQuery.noConflict();
 
 			//	do nothing and wait for user to select a report (or perhaps show
 			//	default report)
+
 
 		});
 	});
