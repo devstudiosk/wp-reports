@@ -1,14 +1,15 @@
-var gulp = require('gulp');
-var uglify = require('gulp-uglify');
-var merge = require('merge-stream');
-var minify_css = require('gulp-minify-css');
-var rename = require('gulp-rename');
-var dateFormat = require('dateformat');
-var zip = require('gulp-zip');
-var pump = require('pump');
 var concat = require('gulp-concat');
 var copy = require('gulp-copy');
+var dateFormat = require('dateformat');
+var del = require('del');
+var gulp = require('gulp');
+var merge = require('merge-stream');
+var minify_css = require('gulp-minify-css');
+var pump = require('pump');
+var rename = require('gulp-rename');
 var sass = require('gulp-sass');
+var uglify = require('gulp-uglify');
+var zip = require('gulp-zip');
 
 var jsSources = [
 	'js/src/*.js',
@@ -113,14 +114,7 @@ gulp.task('watch', ['process-css', 'process-js'], function(cb) {
 
 });
 
-gulp.task('build', ['process-css', 'process-js']);
-
-gulp.task('package', ['build'], function(cb) {
-
-	var fs = require('fs');
-	var time = dateFormat(new Date(), "yyyy-mm-dd_HH-MM");
-	var pkg = JSON.parse(fs.readFileSync('./package.json'));
-	var filename = pkg.name + '-' + pkg.version + '-' + time + '.zip';
+gulp.task('build', ['process-css', 'process-js'], function(cb) {
 
 	pump([
 		gulp.src([
@@ -146,9 +140,35 @@ gulp.task('package', ['build'], function(cb) {
 			'!**/dist/**',
 			'!**/dist'
 		]),
-		zip(filename),
 		gulp.dest('dist')
 	], cb);
+
+});
+
+gulp.task('package', ['build'], function(cb) {
+
+	var fs = require('fs');
+	var time = dateFormat(new Date(), "yyyy-mm-dd_HH-MM");
+	var pkg = JSON.parse(fs.readFileSync('./package.json'));
+	var filename = pkg.name + '-' + pkg.version + '-' + time + '.zip';
+
+	pump([
+		gulp.src([
+			'./dist/**/*'
+		]),
+		zip(filename),
+		gulp.dest('packaged')
+	], cb);
+
+});
+
+gulp.task('clean', function() {
+
+	return del([
+		'dist',
+		'packaged',
+		'vendor'
+	]);
 
 });
 

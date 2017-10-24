@@ -49,35 +49,7 @@ class DS_WP_Reports_AJAX {
 
 		if (array_key_exists('export', $_REQUEST) && $_REQUEST['export'] === 'csv') {
 
-			$valuesToExport = $reportData['values'];
-
-
-			// output headers so that the file is downloaded rather than displayed
-			header('Content-Type: text/csv; charset=utf-8');
-			header('Content-Disposition: attachment; filename=' . $reportId . '_' . current_time('mysql') . '.csv');
-
-			require(DS_WP_REPORTS_PLUGIN_PATH . 'vendor' . DIRECTORY_SEPARATOR . 'autoload.php');
-
-			$writer = Writer::createFromFileObject(new SplTempFileObject()); //the CSV file will be created using a temporary File
-			$writer->setEnclosure('"');
-			$writer->setDelimiter(";"); //the delimiter will be the tab character
-			$writer->setNewline("\r\n"); //use windows line endings for compatibility with some csv libraries
-			$writer->setOutputBOM(Writer::BOM_UTF8); //adding the BOM sequence on output
-
-			foreach ($valuesToExport as $dataValues => $value) {
-				$exportValues = array();
-				array_push($exportValues, $dataValues);
-
-				foreach ($value as $separateValue) {
-					array_push($exportValues, $separateValue);
-				}
-
-				$writer->insertOne($exportValues);
-			}
-
-			$writer->output();
-			die(0);
-
+			self::handleReportDataExport($reportId, $reportData);
 		}
 
 		$visualizationType = array_key_exists('visualization', $_REQUEST) ? trim($_REQUEST['visualization']) : 'timeline';
@@ -85,6 +57,39 @@ class DS_WP_Reports_AJAX {
 			'visualization' => $visualizationType
 		));
 		wp_send_json_success($result);
+
+	}
+
+	public static function handleReportDataExport($reportId, $reportData) {
+
+		$valuesToExport = $reportData['values'];
+
+		// output headers so that the file is downloaded rather than displayed
+		header('Content-Type: text/csv; charset=utf-8');
+		header('Content-Disposition: attachment; filename=' . $reportId . '_' . current_time('mysql') . '.csv');
+
+		require(DS_WP_REPORTS_PLUGIN_PATH . 'vendor' . DIRECTORY_SEPARATOR . 'autoload.php');
+
+		$writer = Writer::createFromFileObject(new SplTempFileObject()); //the CSV file will be created using a temporary File
+		$writer->setEnclosure('"');
+		$writer->setDelimiter(";"); //the delimiter will be the tab character
+		$writer->setNewline("\r\n"); //use windows line endings for compatibility with some csv libraries
+		$writer->setOutputBOM(Writer::BOM_UTF8); //adding the BOM sequence on output
+
+		foreach ($valuesToExport as $dataValues => $value) {
+
+			$exportValues = array();
+			array_push($exportValues, $dataValues);
+
+			foreach ($value as $separateValue) {
+				array_push($exportValues, $separateValue);
+			}
+
+			$writer->insertOne($exportValues);
+		}
+
+		$writer->output();
+		die(0);
 
 	}
 
