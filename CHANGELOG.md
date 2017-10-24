@@ -6,9 +6,13 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+## [1.0.6] - 2017-10-21
+### Changed
+- Fixed date selection cookie persistence by adding support for predefined (relative) date ranges
+
 ## [1.0.5] - 2017-10-19
 ### Added
-- loading indicators to the reporting UI
+- Loading indicators to the reporting UI
 
 ## [1.0.1] - 2017-07-10
 ### Added
