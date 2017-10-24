@@ -1,5 +1,7 @@
 <?php
 
+use League\Csv\Writer;
+
 /**
  * AJAX request handler.
  *
@@ -7,6 +9,8 @@
  * @since 1.0.0
  */
 class DS_WP_Reports_AJAX {
+
+	public static $useCsvHeaders = FALSE;
 
 	public static function init() {
 
@@ -49,10 +53,19 @@ class DS_WP_Reports_AJAX {
 
 			$valuesToExport = $reportData['values'];
 
-			$csvFile = fopen('php://output', 'w');
+			self::$useCsvHeaders = TRUE;
 
-			header("Content-Disposition: attachment; filename=report.csv");
-			header("Content-Type: text/csv");
+			// output headers so that the file is downloaded rather than displayed
+			header('Content-Type: text/csv; charset=utf-8');
+			header('Content-Disposition: attachment; filename=' . $reportId . '_' . current_time('mysql') . '.csv');
+
+			require(DS_WP_REPORTS_PLUGIN_PATH . 'vendor' . DIRECTORY_SEPARATOR . 'autoload.php');
+
+			$writer = Writer::createFromFileObject(new SplTempFileObject()); //the CSV file will be created using a temporary File
+			$writer->setEnclosure('"');
+			$writer->setDelimiter(";"); //the delimiter will be the tab character
+			$writer->setNewline("\r\n"); //use windows line endings for compatibility with some csv libraries
+			$writer->setOutputBOM(Writer::BOM_UTF8); //adding the BOM sequence on output
 
 			foreach ($valuesToExport as $dataValues => $value) {
 				$exportValues = array();
@@ -62,11 +75,11 @@ class DS_WP_Reports_AJAX {
 					array_push($exportValues, $separateValue);
 				}
 
-				fputcsv($csvFile, $exportValues);
+				$writer->insertOne($exportValues);
 			}
 
-			fclose($csvFile);
-			wp_send_json_success();
+			$writer->output();
+			die(0);
 
 		}
 

@@ -63,7 +63,7 @@ class DS_WP_Reports_Core {
 		}
 
 		wp_enqueue_script('wp-reports-vendor', plugins_url('/js/vendor.min.js', DS_WP_REPORTS_PLUGIN_INDEX), array('jquery'), '1.0.3', true);
-		wp_enqueue_script('ds-wp-reports', plugins_url('/js/reports-app.min.js', DS_WP_REPORTS_PLUGIN_INDEX), array('wp-reports-vendor'), '1.0.10', true);
+		wp_enqueue_script('ds-wp-reports', plugins_url('/js/reports-app.min.js', DS_WP_REPORTS_PLUGIN_INDEX), array('wp-reports-vendor'), '1.0.11', true);
 
 		wp_localize_script('ds-wp-reports', 'DS_WP_Reports', array(
 			'ajax_url' => admin_url('admin-ajax.php'),

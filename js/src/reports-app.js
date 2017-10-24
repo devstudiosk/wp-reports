@@ -239,8 +239,9 @@ jQuery.noConflict();
 					html += '<i class="glyphicon glyphicon-calendar fa fa-calendar"></i>&nbsp;';
 					html += '<span></span> <b class="caret"></b>';
 					html += '</div><!-- /#daterange -->';
-					html += '<input type="button" name="export-csv" value="CSV EXPORT" class="button-primary pull-right">';
-					html += '</form>';
+					html += '<a href="#" class="pull-right filter-toggle export-button">';
+					html += '<i class="glyphicon glyphicon-download-alt"></i>&nbsp;Export';
+					html += '</a>';
 
 					var showFiltersTrigger = reportSetup.filters && reportSetup.filters.length;
 					if (showFiltersTrigger) {
@@ -329,7 +330,7 @@ jQuery.noConflict();
 
 			DS_WP_Reports.initExportButton = function() {
 
-				var exportButton = $('input[name="export-csv"]');
+				var exportButton = $('.export-button');
 
 				exportButton.click(function() {
 					DS_WP_Reports.exportButtonOnClickAction(exportButton);
@@ -344,10 +345,8 @@ jQuery.noConflict();
 
 				var formData = reportForm.serialize() + '&export=csv';
 
-				var data = 'action=' + DS_WP_Reports.action_get_report_data + '&' + formData;
-				$.post(DS_WP_Reports.ajax_url, data, DS_WP_Reports.onReportDataLoaded)
-					.fail(DS_WP_Reports.onReportDataLoadFailed);
-				return false;
+				var data = '?action=' + DS_WP_Reports.action_get_report_data + '&' + formData;
+				window.location = DS_WP_Reports.ajax_url + data;
 
 			};
 
@@ -498,14 +497,26 @@ jQuery.noConflict();
 					var predefinedDateRange = DS_WP_Reports.getPredefinedDateRangeIdByLabel(label);
 					if (predefinedDateRange !== null) {
 
-						Cookies.set('ds-wpr-range', predefinedDateRange, {expires: 365, path: '/', domain: window.location.hostname});
+						Cookies.set('ds-wpr-range', predefinedDateRange, {
+							expires: 365,
+							path: '/',
+							domain: window.location.hostname
+						});
 						Cookies.remove('ds-wpr-start-date');
 						Cookies.remove('ds-wpr-end-date');
 
 					} else {
 
-						Cookies.set('ds-wpr-start-date', startDateFormatted, {expires: 365, path: '/', domain: window.location.hostname});
-						Cookies.set('ds-wpr-end-date', endDateFormatted, {expires: 365, path: '/', domain: window.location.hostname});
+						Cookies.set('ds-wpr-start-date', startDateFormatted, {
+							expires: 365,
+							path: '/',
+							domain: window.location.hostname
+						});
+						Cookies.set('ds-wpr-end-date', endDateFormatted, {
+							expires: 365,
+							path: '/',
+							domain: window.location.hostname
+						});
 						Cookies.remove('ds-wpr-range');
 
 					}
