@@ -10,8 +10,6 @@ use League\Csv\Writer;
  */
 class DS_WP_Reports_AJAX {
 
-	public static $useCsvHeaders = FALSE;
-
 	public static function init() {
 
 		add_action('wp_ajax_' . DS_WP_Reports_Core::AJAX_ACTION_REPORT_SETUP, array(__CLASS__, 'handleReportSetupCall'), 10, 0);
@@ -53,7 +51,6 @@ class DS_WP_Reports_AJAX {
 
 			$valuesToExport = $reportData['values'];
 
-			self::$useCsvHeaders = TRUE;
 
 			// output headers so that the file is downloaded rather than displayed
 			header('Content-Type: text/csv; charset=utf-8');
