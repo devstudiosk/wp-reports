@@ -44,7 +44,8 @@ gulp.task('process-vendor-css', ['copy-extra-resources'], function(cb) {
 			'./bower_components/bootstrap/dist/css/bootstrap.css',
 			'./bower_components/bootstrap-daterangepicker/daterangepicker.css',
 			'./bower_components/select2/dist/css/select2.css',
-			'./bower_components/dynatable/jquery.dynatable.css'
+			'./bower_components/dynatable/jquery.dynatable.css',
+			'./bower_components/nprogress/nprogress.css'
 		]),
 		concat('vendor.css'),
 		minify_css(),
@@ -79,7 +80,8 @@ gulp.task('process-vendor-js', [], function(cb) {
 			'./bower_components/chart.js/dist/Chart.js',
 			'./bower_components/select2/dist/js/select2.full.js',
 			'./bower_components/dynatable/jquery.dynatable.js',
-			'./bower_components/js-cookie/src/js.cookie.js'
+			'./bower_components/js-cookie/src/js.cookie.js',
+			'./bower_components/nprogress/nprogress.js'
 		]),
 		concat('vendor.js'),
 		uglify(),

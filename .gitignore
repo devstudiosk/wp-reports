@@ -5,3 +5,5 @@
 /css/*.min.css
 /fonts
 /dist/
+/vendor/
+/composer.lock

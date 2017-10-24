@@ -6,6 +6,10 @@ String.prototype.replaceAll = function(map) {
 	return target;
 };
 
+NProgress.configure({
+	parent: '.report-area'
+});
+
 jQuery.noConflict();
 (function($) {
 	$(function() {
@@ -47,6 +51,7 @@ jQuery.noConflict();
 
 				DS_WP_Reports.lastReportItemClicked = $(element);
 				$(element).closest('li').append(DS_WP_Reports.buildLoader());
+				NProgress.start();
 				DS_WP_Reports.lastReportItemClicked.closest('ul').find('a').addClass('disabled');
 
 				$.post(DS_WP_Reports.ajax_url, {
@@ -302,6 +307,7 @@ jQuery.noConflict();
 				DS_WP_Reports.lastReportItemClicked.closest('li').addClass('active');
 				DS_WP_Reports.lastReportItemClicked.closest('li').find('.loading-indicator').remove();
 				DS_WP_Reports.lastReportItemClicked.closest('ul').find('a.disabled').removeClass('disabled');
+				NProgress.done();
 
 			};
 
@@ -459,11 +465,9 @@ jQuery.noConflict();
 				var startDateFormatted = start.format(DS_WP_Reports.dateFormat);
 				var endDateFormatted = end.format(DS_WP_Reports.dateFormat);
 
-				console.log(label);
 				if (label !== '__init__') {
 
 					var predefinedDateRange = DS_WP_Reports.getPredefinedDateRangeIdByLabel(label);
-					console.log(predefinedDateRange);
 					if (predefinedDateRange !== null) {
 
 						Cookies.set('ds-wpr-range', predefinedDateRange, {expires: 365, path: '/', domain: window.location.hostname});
