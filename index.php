@@ -7,6 +7,8 @@
  * Version: 1.0.7
  * Author: Dev Studio spol. s r.o.
  * Author URI: http://www.devstudio.sk/
+ * License: GPL-2.0+
+ * License URI: http://www.gnu.org/licenses/gpl-2.0.txt
  */
 
 //  work out plugin folder name and store it as a constant
