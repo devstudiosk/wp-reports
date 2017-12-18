@@ -104,7 +104,7 @@ jQuery.noConflict();
 						if (DS_WP_Reports.chart !== null) {
 
 							DS_WP_Reports.chart.destroy();
-							reportContent.find('#ds-wp-reports-chart');
+							reportContent.find('#ds-wp-reports-chart').remove();
 
 						}
 
