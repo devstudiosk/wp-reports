@@ -58,7 +58,7 @@ jQuery.noConflict();
 					'action': DS_WP_Reports.action_get_report_setup,
 					'report_id': reportId
 				}, DS_WP_Reports.onReportSetupLoaded)
-					.fail(DS_WP_Reports.onReportSetupFailed);
+						.fail(DS_WP_Reports.onReportSetupFailed);
 
 				return false;
 
@@ -170,17 +170,22 @@ jQuery.noConflict();
 						});
 					} else if (data.data.visualization === 'tabular') {
 
-						reportContent.find('.report-table').remove();
-						var tableHtml = '<table class="table table-bordered report-table">';
-						tableHtml += '<thead>';
-						for (var index in data.data.labels) {
-							tableHtml += '<th data-dynatable-column="' + index + '">' + data.data.labels[index] + '</th>';
+						var existingTable = reportContent.find('.report-table');
+
+						if (existingTable.length === 0) {
+
+							var tableHtml = '<table class="table table-bordered report-table">';
+							tableHtml += '<thead>';
+							for (var index in data.data.labels) {
+								tableHtml += '<th data-dynatable-column="' + index + '">' + data.data.labels[index] + '</th>';
+							}
+							tableHtml += '</thead>';
+							tableHtml += '<tbody>';
+							tableHtml += '</body>';
+							tableHtml += '</table>';
+							reportContent.append(tableHtml);
+
 						}
-						tableHtml += '</thead>';
-						tableHtml += '<tbody>';
-						tableHtml += '</body>';
-						tableHtml += '</table>';
-						reportContent.append(tableHtml);
 
 						var dataset = new Array();
 						var limit = data.data.values.length;
@@ -188,18 +193,29 @@ jQuery.noConflict();
 							dataset.push(data.data.values[i]);
 						}
 
-						$('.report-table').dynatable({
-							features: {
-								pushState: false,
-								sort: false,
-								search: false,
-								perPageSelect: false
-							},
-							dataset: {
-								records: dataset,
-								perPageDefault: 50
-							}
-						});
+						if (existingTable.length === 0) {
+
+							$('.report-table').dynatable({
+								features: {
+									pushState: false,
+									sort: false,
+									search: false,
+									perPageSelect: false
+								},
+								dataset: {
+									records: dataset,
+									perPageDefault: 50
+								}
+							});
+
+						} else {
+
+							var dynatable = existingTable.data('dynatable');
+							dynatable.records.updateFromJson(dataset);
+							dynatable.records.init();
+							dynatable.settings.dataset.originalRecords = dataset;
+							dynatable.process();
+						}
 					}
 
 				}
@@ -323,7 +339,7 @@ jQuery.noConflict();
 				var form = $(this);
 				var data = 'action=' + DS_WP_Reports.action_get_report_data + '&' + form.serialize();
 				$.post(DS_WP_Reports.ajax_url, data, DS_WP_Reports.onReportDataLoaded)
-					.fail(DS_WP_Reports.onReportDataLoadFailed);
+						.fail(DS_WP_Reports.onReportDataLoadFailed);
 				return false;
 
 			};

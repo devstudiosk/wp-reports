@@ -1,8 +1,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Reports for WordPress\n"
-"POT-Creation-Date: 2017-10-19 15:02+0200\n"
-"PO-Revision-Date: 2017-10-19 15:02+0200\n"
+"POT-Creation-Date: 2017-11-02 23:18+0100\n"
+"PO-Revision-Date: 2017-11-02 23:19+0100\n"
 "Last-Translator: \n"
 "Language-Team: Dev Studio spol. s r.o.\n"
 "Language: sk_SK\n"
@@ -20,23 +20,40 @@ msgstr ""
 "X-Poedit-SearchPath-1: index.php\n"
 "X-Poedit-SearchPath-2: modules\n"
 
+#: lib/DS_WP_Reports_AJAX.php:24 lib/DS_WP_Reports_AJAX.php:43
+msgid "Invalid or missing report ID"
+msgstr "Neplatný alebo chýbajúci identifikátor reportu"
+
 #: lib/DS_WP_Reports_Core.php:55
 msgid "Reports"
 msgstr "Reporty"
 
-#: lib/DS_WP_Reports_Core.php:98
+#: lib/DS_WP_Reports_Core.php:72
+#, php-format
+msgid "Last %s days"
+msgstr "Posledných %s dní"
+
+#: lib/DS_WP_Reports_Core.php:73
+msgid "This month"
+msgstr "Tento mesiac"
+
+#: lib/DS_WP_Reports_Core.php:74
+msgid "Last month"
+msgstr "Posledný mesiac"
+
+#: lib/DS_WP_Reports_Core.php:101
 msgid "Other"
 msgstr "Ostatné"
 
-#: lib/DS_WP_Reports_Core.php:116
+#: lib/DS_WP_Reports_Core.php:119
 msgid "No reports available."
 msgstr "Žiadne reporty nie sú momentálne k dispozícií."
 
-#: lib/DS_WP_Reports_Core.php:130
+#: lib/DS_WP_Reports_Core.php:133
 msgid "Choose one of the reports in the nav bar to get started."
 msgstr "Zvoľte niektorý z reportov..."
 
-#: lib/DS_WP_Reports_Core.php:197
+#: lib/DS_WP_Reports_Core.php:230
 msgid "Invalid date range"
 msgstr "Neplatný rozsah dátumov"
 

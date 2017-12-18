@@ -131,6 +131,8 @@ gulp.task('build', ['process-css', 'process-js'], function(cb) {
 			'!**/components',
 			'!**/scss/**',
 			'!**/scss',
+			'!**/packaged/**',
+			'!**/packaged',
 			'!**/bower.json',
 			'!**/gulpfile.js',
 			'!**/package.json',

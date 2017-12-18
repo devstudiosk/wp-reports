@@ -2,9 +2,8 @@
 
 /*
  * Plugin Name: Reports for WordPress
- * Plugin URI: http://www.devstudio.sk/
  * Description: Powerful reporting framework for WordPress. Written by developers for developers.
- * Version: 1.0.7
+ * Version: 1.0.9
  * Author: Dev Studio spol. s r.o.
  * Author URI: http://www.devstudio.sk/
  * License: GPL-2.0+

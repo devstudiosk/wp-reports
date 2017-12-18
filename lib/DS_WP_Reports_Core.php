@@ -193,8 +193,38 @@ class DS_WP_Reports_Core {
 		$settings = $_REQUEST;
 
 		$currentTime = current_time('timestamp');
-		$toDate = array_key_exists('date_to', $settings) ? trim($settings['date_to']) : date('Y-m-d', $currentTime - 86400);
-		$fromDate = array_key_exists('date_from', $settings) ? trim($settings['date_from']) : date('Y-m-d', $currentTime - 31 * 86400);
+
+		$visualizationType = 'timeline';
+		if (array_key_exists('visualization', $_REQUEST)) {
+			$_vt = filter_var(trim($_REQUEST['visualization']), FILTER_SANITIZE_STRING);
+			if ($_vt !== FALSE) {
+				$visualizationType = $_vt;
+			}
+		}
+
+		$toDate = NULL;
+		if (array_key_exists('date_to', $settings)) {
+			$_td = filter_var(trim($settings['date_to']));
+			if ($_td !== FALSE) {
+				$toDate = $_td;
+			}
+		}
+
+		if ($toDate === NULL) {
+			$toDate = date('Y-m-d', $currentTime - 86400);
+		}
+
+		$fromDate = NULL;
+		if (array_key_exists('date_from', $settings)) {
+			$_fd = filter_var(trim($settings['date_from']));
+			if ($_fd !== FALSE) {
+				$fromDate = $_fd;
+			}
+		}
+
+		if ($fromDate === NULL) {
+			$fromDate = date('Y-m-d', $currentTime - 31 * 86400);
+		}
 
 		if (!DS_WP_Reports_Utils::isValidMySQLDate($toDate) || !DS_WP_Reports_Utils::isValidMySQLDate($fromDate)) {
 			return new WP_Error(__('Invalid date range', 'ds-wp-reports'));
