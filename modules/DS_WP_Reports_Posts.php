@@ -47,7 +47,7 @@ class DS_WP_Reports_Posts implements DS_WP_Reports_ModuleInterface {
 	public static function generateDailyPostsCount($reportId = 0, $settings = array()) {
 
 		$fromDate = $settings['date_from'];
-		$toDate = $settings['date_to'];
+		$toDate = $settings['date_to'] . ' 23:59:59';
 
 		global $wpdb;
 
@@ -59,6 +59,9 @@ class DS_WP_Reports_Posts implements DS_WP_Reports_ModuleInterface {
 				. " GROUP BY post_date2;";
 
 		$postsQuery = $wpdb->prepare($postsQueryPrepared, '%Y-%m-%d', $fromDate, $toDate, '%Y-%m-%d');
+
+		wp_mail('bajzath.jakub@gmail.com','query',$postsQuery);
+
 		$posts = $wpdb->get_results($postsQuery);
 
 		$values = array();

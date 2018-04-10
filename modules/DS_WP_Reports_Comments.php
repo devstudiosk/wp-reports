@@ -62,7 +62,7 @@ class DS_WP_Reports_Comments {
 	public static function generateDailyCommentsCount($reportId = 0, $settings = array()) {
 
 		$fromDate = $settings['date_from'];
-		$toDate = $settings['date_to'];
+		$toDate = $settings['date_to'] . ' 23:59:59';
 
 		global $wpdb;
 
