@@ -97,13 +97,20 @@ body {
 			padding: 15px;
 		}
 
-		table.report-table th {
-			background: #34495e;
-			color: #fff;
+		table.report-table {
 
-			a {
+			overflow-x: auto;
+			display: block;
+
+			th {
+				background: #34495e;
 				color: #fff;
+
+				a {
+					color: #fff;
+				}
 			}
+
 		}
 
 		.filters-area {

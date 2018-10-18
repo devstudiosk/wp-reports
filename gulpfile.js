@@ -10,6 +10,7 @@ var rename = require('gulp-rename');
 var sass = require('gulp-sass');
 var uglify = require('gulp-uglify');
 var zip = require('gulp-zip');
+var IsThere = require("is-there");
 
 var jsSources = [
 	'js/src/*.js',
@@ -116,6 +117,12 @@ gulp.task('watch', ['process-css', 'process-js'], function(cb) {
 
 gulp.task('build', ['process-css', 'process-js'], function(cb) {
 
+	var vendorsFolderExists = IsThere('vendor');
+	if (!vendorsFolderExists) {
+		console.log("Vendor folder %s doesn't exist. Did you run \"composer install\"");
+		return;
+	}
+
 	pump([
 		gulp.src([
 			'**/*',
@@ -136,6 +143,7 @@ gulp.task('build', ['process-css', 'process-js'], function(cb) {
 			'!**/bower.json',
 			'!**/gulpfile.js',
 			'!**/package.json',
+			'!**/package-lock.json',
 			'!**/composer.json',
 			'!**/composer.lock',
 			'!**/codesniffer.ruleset.xml',

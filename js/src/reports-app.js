@@ -58,7 +58,7 @@ jQuery.noConflict();
 					'action': DS_WP_Reports.action_get_report_setup,
 					'report_id': reportId
 				}, DS_WP_Reports.onReportSetupLoaded)
-						.fail(DS_WP_Reports.onReportSetupFailed);
+					.fail(DS_WP_Reports.onReportSetupFailed);
 
 				return false;
 
@@ -72,6 +72,7 @@ jQuery.noConflict();
 
 					var reportContent = $('.report-content');
 					$('.highlights').remove();
+					$('.no-data-notice').remove();
 
 					if (data.data.highlights) {
 
@@ -95,10 +96,7 @@ jQuery.noConflict();
 
 					}
 
-					if (data.data.values.length === 0) {
-						reportContent.append('<p>No data available for current selection.</p>');
-					}
-
+					var dataAvailable = (data.data.values.length > 0);
 					if (data.data.visualization === 'timeline') {
 
 						if (DS_WP_Reports.chart !== null) {
@@ -170,52 +168,64 @@ jQuery.noConflict();
 						});
 					} else if (data.data.visualization === 'tabular') {
 
-						var existingTable = reportContent.find('.report-table');
+						if (!dataAvailable) {
 
-						if (existingTable.length === 0) {
-
-							var tableHtml = '<table class="table table-bordered report-table">';
-							tableHtml += '<thead>';
-							for (var index in data.data.labels) {
-								tableHtml += '<th data-dynatable-column="' + index + '">' + data.data.labels[index] + '</th>';
-							}
-							tableHtml += '</thead>';
-							tableHtml += '<tbody>';
-							tableHtml += '</body>';
-							tableHtml += '</table>';
-							reportContent.append(tableHtml);
-
-						}
-
-						var dataset = new Array();
-						var limit = data.data.values.length;
-						for (var i = 0; i < limit; i++) {
-							dataset.push(data.data.values[i]);
-						}
-
-						if (existingTable.length === 0) {
-
-							$('.report-table').dynatable({
-								features: {
-									pushState: false,
-									sort: false,
-									search: false,
-									perPageSelect: false
-								},
-								dataset: {
-									records: dataset,
-									perPageDefault: 50
-								}
-							});
+							reportContent.empty();
 
 						} else {
 
-							var dynatable = existingTable.data('dynatable');
-							dynatable.records.updateFromJson(dataset);
-							dynatable.records.init();
-							dynatable.settings.dataset.originalRecords = dataset;
-							dynatable.process();
+							var existingTable = reportContent.find('.report-table');
+							if (existingTable.length === 0) {
+
+								var tableHtml = '<table class="table table-bordered report-table">';
+								tableHtml += '<thead>';
+								for (var index in data.data.labels) {
+									tableHtml += '<th data-dynatable-column="' + index + '">' + data.data.labels[index] + '</th>';
+								}
+								tableHtml += '</thead>';
+								tableHtml += '<tbody>';
+								tableHtml += '</body>';
+								tableHtml += '</table>';
+								reportContent.append(tableHtml);
+
+							}
+
+							var dataset = new Array();
+							var limit = data.data.values.length;
+							for (var i = 0; i < limit; i++) {
+								dataset.push(data.data.values[i]);
+							}
+
+							if (existingTable.length === 0) {
+
+								$('.report-table').dynatable({
+									features: {
+										pushState: false,
+										sort: false,
+										search: false,
+										perPageSelect: false
+									},
+									dataset: {
+										records: dataset,
+										perPageDefault: 50
+									}
+								});
+
+							} else {
+
+								var dynatable = existingTable.data('dynatable');
+								dynatable.records.updateFromJson(dataset);
+								dynatable.records.init();
+								dynatable.settings.dataset.originalRecords = dataset;
+								dynatable.process();
+							}
+
 						}
+
+					}
+
+					if (!dataAvailable) {
+						reportContent.append('<p class="no-data-notice">No data available for current selection.</p>');
 					}
 
 				}
@@ -339,7 +349,7 @@ jQuery.noConflict();
 				var form = $(this);
 				var data = 'action=' + DS_WP_Reports.action_get_report_data + '&' + form.serialize();
 				$.post(DS_WP_Reports.ajax_url, data, DS_WP_Reports.onReportDataLoaded)
-						.fail(DS_WP_Reports.onReportDataLoadFailed);
+					.fail(DS_WP_Reports.onReportDataLoadFailed);
 				return false;
 
 			};

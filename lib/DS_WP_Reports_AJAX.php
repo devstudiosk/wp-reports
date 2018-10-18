@@ -73,13 +73,18 @@ class DS_WP_Reports_AJAX {
 
 	public static function handleReportDataExport($reportId, $reportData) {
 
+		$vendorAutoloadFile = DS_WP_REPORTS_PLUGIN_PATH . 'vendor' . DIRECTORY_SEPARATOR . 'autoload.php';
+		if (!file_exists($vendorAutoloadFile)) {
+			wp_die('Missing 3rd party library needed to generate an Excel file.');
+		}
+
+		require($vendorAutoloadFile);
+
 		$valuesToExport = $reportData['values'];
 
 		// output headers so that the file is downloaded rather than displayed
 		header('Content-Type: text/csv; charset=utf-8');
 		header('Content-Disposition: attachment; filename=' . $reportId . '_' . current_time('mysql') . '.csv');
-
-		require(DS_WP_REPORTS_PLUGIN_PATH . 'vendor' . DIRECTORY_SEPARATOR . 'autoload.php');
 
 		$writer = Writer::createFromFileObject(new SplTempFileObject()); //the CSV file will be created using a temporary File
 		$writer->setEnclosure('"');
