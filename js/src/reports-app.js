@@ -198,7 +198,13 @@ jQuery.noConflict();
 
 							if (existingTable.length === 0) {
 
-								$('.report-table').dynatable({
+								$('.report-table').bind('dynatable:init', function(e, dynatable) {
+									if (dynatable.$element.width() > dynatable.$element.closest('.report-content').width()) {
+										dynatable.$element.addClass('too-wide');
+									} else {
+										dynatable.$element.removeClass('too-wide');
+									}
+								}).dynatable({
 									features: {
 										pushState: false,
 										sort: false,

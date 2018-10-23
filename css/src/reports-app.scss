@@ -99,9 +99,10 @@ body {
 
 		table.report-table {
 
-			overflow-x: auto;
-			display: block;
-			table-layout: fixed;
+			&.too-wide {
+				overflow-x: auto;
+				display: block;
+			}
 
 			th {
 				background: #34495e;
