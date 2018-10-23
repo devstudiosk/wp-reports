@@ -1,6 +1,6 @@
 {
 	"name": "ds-wp-reports",
-  "version": "1.0.10",
+  "version": "1.0.11",
 	"description": "Powerful reporting framework for WordPress. Written by developers for developers.",
 	"main": "gulpfile.js",
 	"scripts": {

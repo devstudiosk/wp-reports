@@ -75,7 +75,7 @@ class DS_WP_Reports_Core {
 		));
 
 		wp_enqueue_style('wp-reports-vendor', plugins_url('/css/vendor.min.css', DS_WP_REPORTS_PLUGIN_INDEX), array(), '1.0.1');
-		wp_enqueue_style('ds-wp-reports', plugins_url('/css/reports-app.min.css', DS_WP_REPORTS_PLUGIN_INDEX), array('wp-reports-vendor'), '1.0.2');
+		wp_enqueue_style('ds-wp-reports', plugins_url('/css/reports-app.min.css', DS_WP_REPORTS_PLUGIN_INDEX), array('wp-reports-vendor'), '1.0.3');
 
 	}
 
