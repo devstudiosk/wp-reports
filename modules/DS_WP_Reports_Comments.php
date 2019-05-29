@@ -26,7 +26,7 @@ class DS_WP_Reports_Comments {
 	/**
 	 * Add default Reports from WordPress
 	 *
-	 * @author Jakub Bajzath <jakub.bajzath@devstudio.sk>
+	 * @author Jakub Bajzath <bajzath.jakub@gmail.com>
 	 * @since 1.0.1
 	 *
 	 * @param array $reports
@@ -51,7 +51,7 @@ class DS_WP_Reports_Comments {
 	/**
 	 * Generate daily stats for WordPress comments.
 	 *
-	 * @author Jakub Bajzath <jakub.bajzath@devstudio.sk>
+	 * @author Jakub Bajzath <bajzath.jakub@gmail.com>
 	 * @since 1.0.1
 	 *
 	 * @param int $reportId

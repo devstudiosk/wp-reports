@@ -5,7 +5,7 @@
  * Description: Powerful reporting framework for WordPress. Written by developers for developers.
  * Version: 1.0.11
  * Author: Dev Studio spol. s r.o.
- * Author URI: http://www.devstudio.sk/
+ * Author URI: http://devstudio.sk/
  * License: GPL-2.0+
  * License URI: http://www.gnu.org/licenses/gpl-2.0.txt
  */

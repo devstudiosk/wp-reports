@@ -4,7 +4,7 @@
  * Class DS_WP_Reports_ArgumentHelper
  *
  * @since 5.5.0
- * @author Jakub Bajzath <jakub.bajzath@devstudio.sk>
+ * @author Jakub Bajzath <bajzath.jakub@gmail.com>
  */
 class DS_WP_Reports_ArgumentHelper {
 

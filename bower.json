@@ -13,7 +13,7 @@
     "reporting",
     "analytics"
   ],
-  "homepage": "http://www.devstudio.sk/",
+  "homepage": "http://devstudio.sk/",
   "private": true,
   "ignore": [
     "**/.*",
