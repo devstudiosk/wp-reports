@@ -10,7 +10,8 @@ var rename = require('gulp-rename');
 var sass = require('gulp-sass');
 var uglify = require('gulp-uglify');
 var zip = require('gulp-zip');
-var IsThere = require("is-there");
+var filesExist = require('files-exist');
+var IsThere = require('is-there');
 
 var jsSources = [
 	'js/src/*.js',
@@ -28,10 +29,14 @@ var cssSources = [
 
 gulp.task('copy-extra-resources', [], function(cb) {
 
-	pump([
-		gulp.src([
-			'bower_components/bootstrap/dist/fonts/*.*'
-		]),
+	pump([		
+		gulp.src(
+			filesExist([
+				'bower_components/bootstrap/dist/fonts/*.*'
+			], { 
+				exceptionMessage: 'Please run `bower install` to install missing fonts'
+			})
+		),
 		copy('./fonts', {
 			prefix: 4
 		})
