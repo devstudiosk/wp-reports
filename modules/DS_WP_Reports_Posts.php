@@ -60,8 +60,6 @@ class DS_WP_Reports_Posts implements DS_WP_Reports_ModuleInterface {
 
 		$postsQuery = $wpdb->prepare($postsQueryPrepared, '%Y-%m-%d', $fromDate, $toDate, '%Y-%m-%d');
 
-		wp_mail('bajzath.jakub@gmail.com','query',$postsQuery);
-
 		$posts = $wpdb->get_results($postsQuery);
 
 		$values = array();

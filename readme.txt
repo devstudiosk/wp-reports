@@ -11,6 +11,10 @@ License URI: http://www.gnu.org/licenses/gpl-2.0.txt
 Powerful reporting framework for WordPress. Written by developers for developers.
 
 == Changelog ==
+
+1.0.12
+Removed some debugging code.
+
 1.0.10
 CSS tweaks to the table reports plus a little bit of build optimalization.
 
