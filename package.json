@@ -14,7 +14,7 @@
 	"author": "Dev Studio spol. s r.o.",
 	"license": "BSD-3-Clause",
 	"dependencies": {
-		"bower": "^1.8.0",
+		"bower": "^1.8.8",
 		"dateformat": "^2.0.0",
 		"del": "^3.0.0",
 		"files-exist": "^1.1.0",
